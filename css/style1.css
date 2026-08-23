@@ -1,0 +1,220 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef2f7, #dce6f2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1e293b;
+}
+
+/* =========================================================
+   LOGIN CONTAINER
+   ========================================================= */
+
+.login-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+/* =========================================================
+   LOGIN BOX
+   ========================================================= */
+
+.login-box {
+    width: 430px;
+    background: #ffffff;
+    padding: 38px 42px 42px;
+    border-radius: 16px;
+    box-shadow: 0 15px 45px rgba(15, 23, 42, 0.15);
+    text-align: center;
+    /* border-top: 5px solid #123b63; */
+}
+
+/* =========================================================
+   MAIN HEADING
+   ========================================================= */
+
+.login-box h2 {
+    font-size: 22px;
+    line-height: 1.4;
+    color: #123b63; 
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+/* =========================================================
+   SUBTITLE
+   ========================================================= */
+
+.subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 22px;
+    font-weight: 500;
+}
+
+/* =========================================================
+   DEAL LOGO
+   ========================================================= */
+
+.deal-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    display: block;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+}
+
+/* =========================================================
+   PORTAL TITLE
+   ========================================================= */
+
+.portal-title {
+    font-size: 21px;
+ color: #123b63;
+    font-weight: 700;
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+/* =========================================================
+   INPUT GROUP
+   ========================================================= */
+
+.input-group {
+    text-align: left;
+    margin-bottom: 19px;
+}
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 7px;
+}
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+.input-group input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #1e293b;
+    font-size: 14px;
+    outline: none;
+    transition: 0.25s ease;
+}
+
+/* INPUT FOCUS */
+
+.input-group input:focus {
+    border-color: #2563eb;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+/* PLACEHOLDER */
+
+.input-group input::placeholder {
+    color: #94a3b8;
+}
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.login-box button {
+    width: 100%;
+    height: 47px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 8px;
+    background: #123b63;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+/* BUTTON HOVER */
+
+.login-box button:hover {
+    background: #0b2d4d;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(18, 59, 99, 0.20);
+}
+
+/* BUTTON ACTIVE */
+
+.login-box button:active {
+    transform: translateY(0);
+}
+
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
+.login-box p[style*="color:red"] {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c !important;
+    padding: 10px 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    text-align: left;
+    margin-bottom: 18px !important;
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 500px) {
+
+    .login-container {
+        padding: 20px 15px;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 400px;
+        padding: 30px 25px 35px;
+    }
+
+    .login-box h2 {
+        font-size: 19px;
+    }
+
+    .portal-title {
+        font-size: 19px;
+    }
+
+    .deal-logo {
+        width: 90px;
+        height: 90px;
+    }
+}
