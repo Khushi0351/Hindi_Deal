@@ -1,17 +1,23 @@
-
 <?php
 
 session_start();
 require_once "../db.php";
 
-
-if (!isset($_SESSION['ic_no']) || $_SESSION['role'] !== 'Karyashala') {
+if (
+    !isset($_SESSION['ic_no']) ||
+    ($_SESSION['role'] !== 'Karyashala' && $_SESSION['role'] !== 'Admin')
+) {
     header("Location: ../index.php");
     exit();
 }
 
 $error = "";
 $success = "";
+
+
+/* =====================================================
+   ADD KARYASHALA RECORD
+   ===================================================== */
 
 if (isset($_POST['add_record'])) {
 
@@ -20,98 +26,103 @@ if (isset($_POST['add_record'])) {
     $remarks = trim($_POST['remarks']);
 
 
+    /* ================= BLOCK ================= */
+
     $year = date("Y", strtotime($starting_date));
 
-        if ($year == 2023 || $year == 2024) {
-            $block = "2023-2025";
-        }
-        elseif ($year == 2025 || $year == 2026) {
-            $block = "2025-2027";
-        }
-        elseif ($year == 2027 || $year == 2028) {
-            $block = "2027-2029";
-        }
-        else {
-            $block = "";
-        }
+    if ($year == 2023 || $year == 2024) {
 
+        $block = "2023-2025";
 
-    $sql = "SELECT e.name
-            FROM employees e
-            INNER JOIN roles r ON e.ic_no = r.ic_no
-            WHERE e.ic_no = ?
-            AND r.role_name = 'Karyashala'";
+    } elseif ($year == 2025 || $year == 2026) {
 
-    $stmt = mysqli_prepare($conn, $sql);
+        $block = "2025-2027";
 
-    mysqli_stmt_bind_param(
-        $stmt,
-        "i",
-        $ic_no
-    );
+    } elseif ($year == 2027 || $year == 2028) {
 
-    mysqli_stmt_execute($stmt);
+        $block = "2027-2029";
 
-    $employee_result = mysqli_stmt_get_result($stmt);
+    } else {
 
-
-    if (mysqli_num_rows($employee_result) == 0) {
-
-        $error = "This IC Number is not assigned to Karyashala.";
+        $block = "";
 
     }
-    else {
 
-        $employee = mysqli_fetch_assoc($employee_result);
 
-        $employee_name = $employee['name'];
+    if ($block == "") {
 
-        $check_sql = "SELECT ic_no
-              FROM karyashala_records
-              WHERE ic_no = ?";
+        $error = "Starting date is outside the allowed block.";
 
-        $check_stmt = mysqli_prepare(
-            $conn,
-            $check_sql
-        );
+    } else {
+
+
+        /* ================= CHECK EMPLOYEE ================= */
+
+        $sql = "
+            SELECT e.name
+            FROM employees e
+            INNER JOIN roles r
+                ON e.ic_no = r.ic_no
+            WHERE e.ic_no = ?
+            AND r.role_name = 'Karyashala'
+        ";
+
+        $stmt = mysqli_prepare($conn, $sql);
 
         mysqli_stmt_bind_param(
-            $check_stmt,
+            $stmt,
             "i",
             $ic_no
         );
 
-        mysqli_stmt_execute($check_stmt);
+        mysqli_stmt_execute($stmt);
 
-        $check_result = mysqli_stmt_get_result(
-            $check_stmt
-        );
+        $employee_result = mysqli_stmt_get_result($stmt);
 
 
-        if (mysqli_num_rows($check_result) > 0) {
+        if (mysqli_num_rows($employee_result) == 0) {
 
-            $error = "This employee is already added to Karyashala.";
+            $error = "This IC Number is not assigned to Karyashala.";
 
-        }
-        else {
+        } else {
 
-            $insert_sql = "INSERT INTO karyashala_records
-               (ic_no, employee_name, starting_date, block, remarks)
-               VALUES (?, ?, ?, ?, ?)";
+            $employee = mysqli_fetch_assoc($employee_result);
+
+            $employee_name = $employee['name'];
+
+
+            /* =================================================
+               IMPORTANT:
+               NO DUPLICATE IC CHECK
+               Same IC can have multiple records.
+               ================================================= */
+
+            $insert_sql = "
+                INSERT INTO karyashala_records
+                (
+                    ic_no,
+                    employee_name,
+                    starting_date,
+                    block,
+                    remarks
+                )
+                VALUES (?, ?, ?, ?, ?)
+            ";
 
             $insert_stmt = mysqli_prepare(
                 $conn,
                 $insert_sql
             );
 
-           mysqli_stmt_bind_param(
-            $insert_stmt,
-            "issss",
-            $ic_no,
-            $employee_name,
-            $starting_date,
-            $block,
-            $remarks
+
+            mysqli_stmt_bind_param(
+                $insert_stmt,
+                "issss",
+                $ic_no,
+                $employee_name,
+                $starting_date,
+                $block,
+                $remarks
             );
 
 
@@ -120,11 +131,12 @@ if (isset($_POST['add_record'])) {
                 $success =
                     "Karyashala record added successfully.";
 
-            }
-            else {
+            } else {
 
                 $error =
-                    "Unable to save Karyashala record.";
+                    "Unable to save Karyashala record: " .
+                    mysqli_error($conn);
+
             }
 
 
@@ -132,22 +144,48 @@ if (isset($_POST['add_record'])) {
         }
 
 
-        mysqli_stmt_close($check_stmt);
+        mysqli_stmt_close($stmt);
     }
-
-
-    mysqli_stmt_close($stmt);
 }
 
-    $result = mysqli_query(
-        $conn,
-        "SELECT kr.* 
-        FROM karyashala_records kr 
-        INNER JOIN roles r 
-        ON kr.ic_no = r.ic_no 
-        WHERE r.role_name = 'Karyashala' 
-        ORDER BY kr.starting_date DESC"
+
+/* =====================================================
+   FETCH KARYASHALA RECORDS
+   ===================================================== */
+
+$result = mysqli_query(
+    $conn,
+    "
+    SELECT
+        kr.id,
+        kr.ic_no,
+        kr.employee_name,
+        kr.starting_date,
+        kr.block,
+        kr.remarks
+
+    FROM karyashala_records kr
+
+    INNER JOIN roles r
+        ON kr.ic_no = r.ic_no
+
+    WHERE r.role_name = 'Karyashala'
+
+    ORDER BY
+        kr.ic_no ASC,
+        kr.id ASC
+    "
 );
+
+
+if (!$result) {
+
+    $error =
+        "Unable to fetch Karyashala records: " .
+        mysqli_error($conn);
+
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -220,7 +258,7 @@ if (isset($_POST['add_record'])) {
                 <tr>
                     <td> <?php echo htmlspecialchars($row['ic_no']);?> </td>
                     <td> <?php echo htmlspecialchars( $row['employee_name']); ?> </td>
-                    <td> <?php echo htmlspecialchars($row['starting_date']); ?></td>
+                    <td> <?php echo date ('d-m-Y', strtotime($row['starting_date'])); ?></td>
                     <td> <?php echo htmlspecialchars( $row['remarks'] ); ?></td>
                 </tr>
 

@@ -4,8 +4,8 @@
 session_start();
 require_once "../db.php";
 
-if (!isset($_SESSION['ic_no']) || $_SESSION['role'] !== 'Karyashala') 
-{
+if (!isset($_SESSION['ic_no']) || $_SESSION['role'] !== 'Karyashala' 
+ && $_SESSION['role'] !== 'Admin') {
     header("Location: ../index.php");
     exit();
 }
@@ -298,13 +298,8 @@ if ($selected_block != "") {
                         </td>
 
 
-                        <td>
-                            <?php
-                            echo htmlspecialchars(
-                                $row['starting_date']
-                            );
-                            ?>
-                        </td>
+                        <td> <?php echo date ('d-m-Y', strtotime($row['starting_date'])); ?></td>
+                       
 
 
                         <td>

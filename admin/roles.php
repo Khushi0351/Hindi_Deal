@@ -138,24 +138,25 @@ if (isset($_POST['add_role'])) {
 
         mysqli_stmt_close($stmt1);
 
-        $delete_module = " 
-         DELETE FROM module_records 
-         WHERE ic_no = ? ";
+       $delete_module = "
+    DELETE FROM module_attendance
+    WHERE ic_no = ?
+";
 
-        $stmt2 = mysqli_prepare(
-            $conn,
-            $delete_module
-        );
+$stmt2 = mysqli_prepare(
+    $conn,
+    $delete_module
+);
 
-        mysqli_stmt_bind_param(
-            $stmt2,
-            "i",
-            $ic_no
-        );
+mysqli_stmt_bind_param(
+    $stmt2,
+    "i",
+    $ic_no
+);
 
-        mysqli_stmt_execute($stmt2);
+mysqli_stmt_execute($stmt2);
 
-        mysqli_stmt_close($stmt2);
+mysqli_stmt_close($stmt2);
     }
 
     

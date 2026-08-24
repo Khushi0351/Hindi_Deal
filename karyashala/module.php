@@ -4,11 +4,11 @@
 session_start();
 require_once "../db.php";
 
-if (!isset($_SESSION['ic_no']) || $_SESSION['role'] !== 'Karyashala') {
+if (!isset($_SESSION['ic_no']) || $_SESSION['role'] !== 'Karyashala' 
+ && $_SESSION['role'] !== 'Admin') {
     header("Location: ../index.php");
     exit();
 }
-
 $selected_block = "";
 $result = null;
 $error = "";
@@ -382,7 +382,7 @@ if ($selected_block != "") {
             AND ma.block = ?
         WHERE kr.block = ?
         AND r.role_name = 'Karyashala'
-        ORDER BY kr.starting_date ASC
+        ORDER BY kr.ic_no ASC
     ";
 
     $stmt =
@@ -526,7 +526,7 @@ if ($selected_block != "") {
                         <td><?php echo htmlspecialchars($row['ic_no'] );?></td>
                         <td> <?php echo htmlspecialchars($row[ 'employee_name']);?></td>
                         <td><?php echo htmlspecialchars( $row['designation']);?></td>
-                        <td><?php echo htmlspecialchars( $row['starting_date']);?></td>
+                        <td> <?php echo date ('d-m-Y', strtotime($row['starting_date'])); ?></td>
                         <td><?php echo htmlspecialchars( $row['karyashala_remarks']);?></td>
                         <td>
                             <?php
@@ -744,13 +744,23 @@ function viewRecord(row) {
 
     document.getElementById( "v_designation" ).innerText = row.designation;
 
-    document.getElementById( "v_date" ).innerText = row.starting_date;
+    document.getElementById( "v_date" ).innerText = formatDate(row.starting_date);
 
     document.getElementById("v_kremarks" ).innerText = row.karyashala_remarks || "—";
 
     document.getElementById( "v_attendance" ).innerText = row.attendance || "Not Marked";
 
     document.getElementById("viewModal" ).style.display = "flex";
+}
+
+function formatDate(dateString){
+
+    if (!dateString){
+        return "";
+    }
+    const parts = dateString.split("-");
+
+    return parts[2] + "-" + parts[1] + "-" + parts[0];
 }
 
 function closeView() {

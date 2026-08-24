@@ -1,6 +1,9 @@
 <?php
+
 session_start();
 require_once "db.php";
+
+
 
 $error = "";
 
@@ -21,7 +24,9 @@ if (isset($_POST['login'])) {
 
         $employee = mysqli_fetch_assoc($result);
 
-        if ($password === $employee['password']) {
+        /* CHECK HASHED PASSWORD */
+
+        if (password_verify($password, $employee['password'])) {
 
             $role_sql = "SELECT role_name FROM roles WHERE ic_no = ?";
             $role_stmt = mysqli_prepare($conn, $role_sql);
@@ -41,31 +46,38 @@ if (isset($_POST['login'])) {
                 $_SESSION['role'] = $role;
 
                 if ($role === "Admin") {
+
                     header("Location: admin/dashboard.php");
                     exit();
-                }
 
-                if ($role === "Karyashala") {
+                } elseif ($role === "Karyashala") {
+
                     header("Location: karyashala/dashboard.php");
                     exit();
+
+                } else {
+
+                    $error = "Invalid role.";
                 }
 
-            } 
-            else {
+            } else {
+
                 $error = "Role is not assigned.";
             }
 
-        } 
-        else {
+        } else {
+
             $error = "Invalid IC No. or Password.";
         }
 
-    }
-    else {
+    } else {
+
         $error = "Invalid IC No. or Password.";
     }
 }
+
 ?>
+         
 
 <!DOCTYPE html>
 <html lang="en">

@@ -38,6 +38,11 @@ $name = $_SESSION['name'];
         <a href="roles.php" class="menu-card">
             <h2>Role Management</h2>
         </a>
+
+        <a href="../karyashala/dashboard.php" class="menu-card">
+            <h2>Karyshala Management</h2>
+        </a>
+
     </div>
 
 </div>
